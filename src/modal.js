@@ -1,11 +1,9 @@
-
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
 
 const Modal = ({ show, setShow }) => {
   const [username, setUsername] = useState("");
   const formRef = useRef(null);
+  const modalRef = useRef(null);
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const [date, setDate] = useState("");
@@ -22,7 +20,7 @@ const Modal = ({ show, setShow }) => {
       alert(`Invalid email. Please check your email address.`);
     }
 
-    if (number.length != 10) {
+    if (number.length !== 10) {
       alert("Invalid phone number. Please enter a 10-digit phone number.");
     }
 
@@ -37,18 +35,23 @@ const Modal = ({ show, setShow }) => {
   };
 
   useEffect(() => {
-    if (formRef.current) {
-      formRef.current.addEventListener("click", () => {
-        setShow(!show);
-      });
+    function handleClickOutside(event) {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setShow(false);
+      }
     }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
     <>
       <div className="frm__section" ref={formRef}></div>
 
-      <div className="modal">
+      <div className="modal" ref={modalRef}>
         <div className="modal-content">
           <form className="form__ctrl" onSubmit={handleSubmit}>
             <h1>Fill Details</h1>
